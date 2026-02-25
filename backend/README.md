@@ -35,22 +35,50 @@ You can adjust the deduplication window in `src/services/readTracking.service.ts
    ```bash
    npx prisma generate
    ```
-6. Start the server:
+6. Start the development server (with auto-reload):
    ```bash
    npm run dev
    ```
+7. Build the project (compile TypeScript to JavaScript):
+   ```bash
+   npm run build
+   ```
+8. Start the production server (after building):
+   ```bash
+   npm start
+   ```
 
-## Running Tests
+## Running, Building, and Testing
 
-This project uses Jest and Supertest for API endpoint testing. All test cases are located in the `tests/` directory.
+All commands below must be run from the `/backend` directory, as all code and tests reside there.
 
-### To run all tests:
+### Development server (auto-reload):
+
+```bash
+npm run dev
+```
+
+### Build the project:
+
+```bash
+npm run build
+```
+
+### Start the production server:
+
+```bash
+npm start
+```
+
+### Run all tests:
 
 ```bash
 npm test
 ```
 
 ### Test Structure
+
+All test files are in `backend/tests/`:
 
 - **auth.test.ts**: Tests authentication endpoints (signup, login, duplicate email handling).
 - **article.test.ts**: Tests article creation, deletion, and authorization.
@@ -113,7 +141,7 @@ If you add new dependencies, run `npm install` again.
 
 - `src/` - Main codebase
 - `prisma/` - Prisma schema
-- `tests/` - Unit tests
+- `tests/` - Unit tests (all inside `backend/tests/`)
 
 ## Commit & Submission
 

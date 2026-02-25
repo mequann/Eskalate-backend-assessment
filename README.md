@@ -35,22 +35,60 @@ You can adjust the deduplication window in `src/services/readTracking.service.ts
    ```bash
    npx prisma generate
    ```
-6. Start the server:
+6. Start the development server (with auto-reload):
    ```bash
+   cd backend
    npm run dev
    ```
+7. Build the project (compile TypeScript to JavaScript):
+   ```bash
+   cd backend
+   npm run build
+   ```
+8. Start the production server (after building):
+   ```bash
+   cd backend
+   npm start
+   ```
 
-## Running Tests
+## Running, Building, and Testing
 
-This project uses Jest and Supertest for API endpoint testing. All test cases are located in the `tests/` directory.
+All commands below must be run from the `/backend` directory, as all code and tests reside there.
 
-### To run all tests:
+### Development server (auto-reload):
 
 ```bash
+cd backend
+npm run dev
+```
+
+### Build the project:
+
+```bash
+cd backend
+npm run build
+```
+
+### Start the production server:
+
+> **Important:** You must run `npm run build` before `npm start` to generate the `dist/app.js` file. If you see a `MODULE_NOT_FOUND` error for `dist/app.js`, it means the build step was skipped.
+
+```bash
+cd backend
+npm run build
+npm start
+```
+
+### Run all tests:
+
+```bash
+cd backend
 npm test
 ```
 
 ### Test Structure
+
+All test files are in `backend/tests/`:
 
 - **auth.test.ts**: Tests authentication endpoints (signup, login, duplicate email handling).
 - **article.test.ts**: Tests article creation, deletion, and authorization.
@@ -64,6 +102,20 @@ npm test
 - Ensure your database and Redis are running before running tests.
 
 ## Troubleshooting
+
+If you see the error:
+
+```
+Error: Cannot find module 'dist/app.js'
+```
+
+Run:
+
+```
+npm run build
+```
+
+Then try `npm start` again.
 
 If you see the error:
 
@@ -111,9 +163,9 @@ If you add new dependencies, run `npm install` again.
 
 ## Folder Structure
 
-- `src/` - Main codebase
-- `prisma/` - Prisma schema
-- `tests/` - Unit tests
+- `backend/src/` - Main codebase
+- `backend/prisma/` - Prisma schema
+- `backend/tests/` - Unit tests
 
 ## Commit & Submission
 
