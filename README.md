@@ -29,6 +29,29 @@
    npm run dev
    ```
 
+## Running Tests
+
+This project uses Jest and Supertest for API endpoint testing. All test cases are located in the `tests/` directory.
+
+### To run all tests:
+
+```bash
+npm test
+```
+
+### Test Structure
+
+- **auth.test.ts**: Tests authentication endpoints (signup, login, duplicate email handling).
+- **article.test.ts**: Tests article creation, deletion, and authorization.
+- **readLog.test.ts**: Tests article read logging and access.
+
+### Notes
+
+- Tests use unique emails for each run to avoid duplicate errors.
+- Article tests ensure articles are published for read access.
+- All routes are mounted under `/api`.
+- Ensure your database and Redis are running before running tests.
+
 ## Troubleshooting
 
 If you see the error:
@@ -86,4 +109,5 @@ If you add new dependencies, run `npm install` again.
 - Commit frequently with descriptive messages.
 - Push to a public GitHub repo.
 - Submit the repo link via Google Form.
+
 # Eskalate-backend-assessment
