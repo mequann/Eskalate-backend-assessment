@@ -26,14 +26,28 @@ export const ArticleController = {
 
   async getFeed(req: AuthRequest, res: Response) {
     try {
-      const result = await ArticleService.getPublishedArticles(
-        req.query as any,
-      );
+      // Always ensure limit is a valid integer, never undefined
+      const page = req.query.page ? parseInt(req.query.page as string) : 1;
+      let limit = 10;
+      if (req.query.limit && !isNaN(parseInt(req.query.limit as string))) {
+        limit = parseInt(req.query.limit as string);
+      } else if (
+        req.query.pageSize &&
+        !isNaN(parseInt(req.query.pageSize as string))
+      ) {
+        limit = parseInt(req.query.pageSize as string);
+      }
+      const result = await ArticleService.getPublishedArticles({
+        ...req.query,
+        page,
+        limit,
+        includeDeleted: false,
+      });
       return res.json(
         paginatedResponse(
           result.articles,
-          parseInt(req.query.page as string) || 1,
-          parseInt(req.query.limit as string) || 10,
+          page,
+          limit,
           result.total,
           "Articles retrieved successfully",
         ),

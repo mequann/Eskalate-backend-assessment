@@ -1,6 +1,8 @@
-
-import { prisma } from '../config/database';
-import type { CreateArticleDTO, UpdateArticleDTO } from '../validators/article.validator';
+import { prisma } from "../config/database";
+import type {
+  CreateArticleDTO,
+  UpdateArticleDTO,
+} from "../validators/article.validator";
 
 export const ArticleModel = {
   async create(data: CreateArticleDTO & { authorId: string }) {
@@ -9,12 +11,12 @@ export const ArticleModel = {
         title: data.title,
         content: data.content,
         category: data.category,
-        status: data.status || 'DRAFT',
-        authorId: data.authorId
+        status: data.status || "DRAFT",
+        authorId: data.authorId,
       },
       include: {
-        author: { select: { id: true, name: true } }
-      }
+        author: { select: { id: true, name: true } },
+      },
     });
   },
 
@@ -22,11 +24,11 @@ export const ArticleModel = {
     return prisma.article.findFirst({
       where: {
         id,
-        ...(includeDeleted ? {} : { deletedAt: null })
+        ...(includeDeleted ? {} : { deletedAt: null }),
       },
       include: {
-        author: { select: { id: true, name: true } }
-      }
+        author: { select: { id: true, name: true } },
+      },
     });
   },
 
@@ -38,48 +40,67 @@ export const ArticleModel = {
     limit: number;
   }) {
     const where: any = {
-      status: 'PUBLISHED',
-      deletedAt: null
+      status: "PUBLISHED",
+      deletedAt: null,
     };
 
     if (filters.category) where.category = filters.category;
     if (filters.author) {
-      where.author = { name: { contains: filters.author, mode: 'insensitive' } };
+      where.author = {
+        name: { contains: filters.author, mode: "insensitive" },
+      };
     }
     if (filters.q) {
-      where.title = { contains: filters.q, mode: 'insensitive' };
+      where.title = { contains: filters.q, mode: "insensitive" };
     }
 
+    // Ensure skip and take are always integers and never undefined
+    const page =
+      typeof filters.page === "number" && filters.page > 0 ? filters.page : 1;
+    let take = 10;
+    if (typeof filters.limit === "number" && filters.limit > 0) {
+      take = filters.limit;
+    }
     const [articles, total] = await Promise.all([
       prisma.article.findMany({
         where,
-        skip: (filters.page - 1) * filters.limit,
-        take: filters.limit,
+        skip: (page - 1) * take,
+        take,
         include: { author: { select: { id: true, name: true } } },
-        orderBy: { createdAt: 'desc' }
+        orderBy: { createdAt: "desc" },
       }),
-      prisma.article.count({ where })
+      prisma.article.count({ where }),
     ]);
 
     return { articles, total };
   },
 
-  async findByAuthor(authorId: string, filters: {
-    includeDeleted?: boolean;
-    page: number;
-    limit: number;
-  }) {
+  async findByAuthor(
+    authorId: string,
+    filters: {
+      includeDeleted?: boolean;
+      page: number;
+      limit: number;
+    },
+  ) {
     const where: any = { authorId };
     if (!filters.includeDeleted) where.deletedAt = null;
 
+    // Ensure skip and take are always integers
+    const page =
+      typeof filters.page === "number" && filters.page > 0 ? filters.page : 1;
+    const limit =
+      typeof filters.limit === "number" && filters.limit > 0
+        ? filters.limit
+        : 10;
     const [articles, total] = await Promise.all([
       prisma.article.findMany({
         where,
-        skip: (filters.page - 1) * filters.limit,
-        take: filters.limit,
-        orderBy: { createdAt: 'desc' }
+        skip: (page - 1) * limit,
+        take: limit,
+        orderBy: { createdAt: "desc" },
       }),
-      prisma.article.count({ where })
+      prisma.article.count({ where }),
     ]);
 
     return { articles, total };
@@ -87,11 +108,11 @@ export const ArticleModel = {
 
   async update(id: string, authorId: string, data: UpdateArticleDTO) {
     const article = await prisma.article.findFirst({
-      where: { id, authorId, deletedAt: null }
+      where: { id, authorId, deletedAt: null },
     });
 
     if (!article) {
-      const error = new Error('Article not found or forbidden');
+      const error = new Error("Article not found or forbidden");
       (error as any).statusCode = 403;
       throw error;
     }
@@ -99,24 +120,24 @@ export const ArticleModel = {
     return prisma.article.update({
       where: { id },
       data,
-      include: { author: { select: { id: true, name: true } } }
+      include: { author: { select: { id: true, name: true } } },
     });
   },
 
   async softDelete(id: string, authorId: string) {
     const article = await prisma.article.findFirst({
-      where: { id, authorId, deletedAt: null }
+      where: { id, authorId, deletedAt: null },
     });
 
     if (!article) {
-      const error = new Error('Article not found or forbidden');
+      const error = new Error("Article not found or forbidden");
       (error as any).statusCode = 403;
       throw error;
     }
 
     return prisma.article.update({
       where: { id },
-      data: { deletedAt: new Date() }
+      data: { deletedAt: new Date() },
     });
-  }
+  },
 };
