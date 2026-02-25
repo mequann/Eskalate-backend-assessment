@@ -1,3 +1,14 @@
+## Bonus: ReadLog Deduplication
+
+To prevent users from generating excessive ReadLog entries (e.g., 100 reads in 10 seconds), this project uses Redis for deduplication:
+
+- Before logging a read, the system checks Redis for a key like `read:{userId}:{articleId}` (or `read:{ip}:{articleId}` for guests).
+- If the key exists (recent read), the log is skipped.
+- If not, the read is logged and the key is set with a short expiry (default: 60 seconds).
+- This prevents duplicate reads from the same user/IP within the window, ensuring accurate analytics and performance.
+
+You can adjust the deduplication window in `src/services/readTracking.service.ts` by changing `RATE_LIMIT_WINDOW`.
+
 # Eskalate News API Backend
 
 ## Setup
