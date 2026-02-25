@@ -6,17 +6,18 @@ describe("Article Endpoints", () => {
   let articleId: string;
 
   beforeAll(async () => {
+    const authorEmail = `author_${Date.now()}@example.com`;
     await request(app).post("/api/auth/signup").send({
       name: "Author",
-      email: "author@example.com",
+      email: authorEmail,
       password: "StrongPass1!",
       role: "author",
     });
     const res = await request(app).post("/api/auth/login").send({
-      email: "author@example.com",
+      email: authorEmail,
       password: "StrongPass1!",
     });
-    accessToken = res.body.Object.accessToken;
+    accessToken = res.body.Object.token;
   });
 
   it("should create an article", async () => {
@@ -29,7 +30,7 @@ describe("Article Endpoints", () => {
           "This is a test article content with more than fifty characters.",
         category: "Tech",
       });
-    expect(res.statusCode).toBe(200);
+    expect(res.statusCode).toBe(201);
     expect(res.body.Success).toBe(true);
     articleId = res.body.Object.id;
   });
